@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Services.Implementations;
 
 namespace WebApplication1.Controllers
@@ -30,11 +31,17 @@ namespace WebApplication1.Controllers
                     FacilityName = inputData["FacilityName"],
                 };
             }*/
-            var message=service.OnBoardFacility(facilityDto);
-            if (message.Equals("City don't exist") || message.Equals("Building don't exist"))
-                return NotFound(message);
-            else
+            try
+            {
+                var message = service.OnBoardFacility(facilityDto);
                 return Ok(message);
+               
+            }
+            catch (CustomException ex)
+            {
+                return NotFound(ex.Message);
+            }
+              
         }
         //modify the get
         [HttpGet]

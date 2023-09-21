@@ -20,9 +20,11 @@ namespace WebApplication1.Controllers
        
 
         [HttpPost]
-        public IActionResult Add([FromBody]EmployeeDto employee)
+        public IActionResult Add([FromBody]List<EmployeeDto> employees)
         {
-            string msg=service.AddEmployee(employee);
+            string msg=service.AddEmployee(employees);
+            //change
+            //TODO:
             if (msg.Equals("Department Not Found"))
                 return NotFound(msg);
             else

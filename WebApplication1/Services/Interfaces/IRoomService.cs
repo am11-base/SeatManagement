@@ -5,5 +5,6 @@ namespace WebApplication1.Services.Interfaces
     public interface IRoomService
     {
         string AddRoom(RoomDto roomDto);
+        bool CheckIfExists(int roomId);
     }
 }

@@ -25,6 +25,8 @@ namespace SeatManagement.Implementations
             IDepartmentHandler departmentHandler = new DepartmentHandler();
             await departmentHandler.PrintDepartmentAsync();
 
+            List<EmployeeDto> listOfEmployees = new List<EmployeeDto>();
+
             for(int i=0;i<count;i++)
             {
                 Console.WriteLine($"\n\n Enter the details of {i+1} employee");
@@ -34,10 +36,12 @@ namespace SeatManagement.Implementations
                 int deptId=int.Parse(Console.ReadLine());
 
                 EmployeeDto employee = new EmployeeDto { DepartmentId = deptId, EmployeeName = empName };
-                var json = JsonSerializer.Serialize<EmployeeDto>(employee);
-                HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-                await httpHandler.HttpPostAsync(json, "Employees");
+                listOfEmployees.Add(employee);
+                
             }
+            var json = JsonSerializer.Serialize<List<EmployeeDto>>(listOfEmployees);
+            HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
+            await httpHandler.HttpPostAsync(json, "Employees");
 
         }
         public async Task DisplayAllAsync()

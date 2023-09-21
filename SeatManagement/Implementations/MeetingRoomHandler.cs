@@ -54,10 +54,10 @@ namespace SeatManagement.Implementations
         }
         public async Task AddAmenityMappingAsync(int amenityId, int roomId)
         {
-            RoomAmenityMapDto roomAmenityMap = new RoomAmenityMapDto { AmenityId = amenityId, RoomId = roomId };
-            var json=JsonSerializer.Serialize<RoomAmenityMapDto>(roomAmenityMap);
+            //RoomAmenityMapDto roomAmenityMap = new RoomAmenityMapDto { AmenityId = amenityId, RoomId = roomId };
+            //var json = JsonSerializer.Serialize<RoomAmenityMapDto>(roomAmenityMap);
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(json, "RoomAmenityMappings");
+            await httpHandler.HttpPostAsync(amenityId.ToString(), $"MeetingRooms/{roomId}/amenities");
         }
     }
 }

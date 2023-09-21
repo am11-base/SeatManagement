@@ -25,15 +25,9 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Add([FromBody]BuildingDto buildingDto)
         {
-            try
-            {
                 service.AddBuilding(buildingDto);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+ 
         }
     }
 }

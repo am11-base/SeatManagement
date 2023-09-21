@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
@@ -10,21 +11,39 @@ namespace WebApplication1.Controllers
     public class MeetingRoomsController : ControllerBase
     {
         private readonly IRoomService roomService;
+        private readonly IRoomAmenityMapService mappingService;
 
-        public MeetingRoomsController(IRoomService roomService)
+        public MeetingRoomsController(IRoomService roomService, IRoomAmenityMapService mappingService)
         {
             this.roomService = roomService;
+            this.mappingService = mappingService;
         }
         [HttpPost]
-        public IActionResult Add([FromBody]RoomDto roomDto)
+        public IActionResult Add([FromBody] RoomDto roomDto)
         {
-            string response=roomService.AddRoom(roomDto);
-            if (int.TryParse(response, out int id))
+            try
             {
-                return Ok(response);
+                string response = roomService.AddRoom(roomDto);
+                return Ok(int.Parse(response));
             }
-            else
-                return NotFound(response);
+            catch(CustomException ex)
+            {
+                return NotFound(ex.Message);
+            }
+                
+        }
+        [HttpPost("{id}/amenities")]
+        public IActionResult AmenityMapping(int id, [FromBody]int amenityId)
+        {
+            try
+            {
+                mappingService.AddMapping(id, amenityId);
+                return Ok("mapping added");
+            }
+            catch(CustomException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
     }

@@ -5,6 +5,6 @@ namespace WebApplication1.Services.Interfaces
 {
     public interface IRoomAmenityMapService
     {
-        void AddMapping(RoomAmenityMapDto roomAmenityMap);
+        public void AddMapping(int amenityId, int roomId);
     }
 }

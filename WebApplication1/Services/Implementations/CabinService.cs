@@ -1,4 +1,5 @@
 ﻿using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Repositories.Interfaces;
 using WebApplication1.Services.Interfaces;
@@ -22,8 +23,7 @@ namespace WebApplication1.Services.Implementations
             string message;
             if (!facilityService.CheckIfExists(cabinData.FacilityId))
             {
-                message = "Facility Not Found";
-                return message;
+                throw new CustomException("facility not found");
             }
             else
             {

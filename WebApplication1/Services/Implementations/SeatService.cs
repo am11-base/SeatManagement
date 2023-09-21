@@ -1,4 +1,5 @@
 ﻿using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Repositories.Implementations;
 using WebApplication1.Repositories.Interfaces;
@@ -23,8 +24,7 @@ namespace WebApplication1.Services.Implementations
             string message;
             if (!facilityService.CheckIfExists(seatData.FacilityId))
             {
-                message = "Facility Not Found";
-                return message;
+                throw new CustomException("Facility Not Found");
             }
             else
             {
@@ -87,5 +87,6 @@ namespace WebApplication1.Services.Implementations
             seat.IsAssigned = true;
             repository.Update(seat);
         }
+
     }
 }

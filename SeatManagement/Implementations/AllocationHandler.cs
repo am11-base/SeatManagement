@@ -39,6 +39,14 @@ namespace SeatManagement.Implementations
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
+            AllocationDto allocationDto = new AllocationDto
+            {
+          
+                AssetType = choice,
+                EmployeeId = empId,
+                FacilityId = facilityId,
+            };
+           
             if (choice.ToLower() == "cabin")
             {
                 ICabinHandler cabinHandler = new CabinHandler();
@@ -48,6 +56,11 @@ namespace SeatManagement.Implementations
                 Console.Write("\n Enter the cabin name to be allocated : ");
                 assetName=Console.ReadLine();
                 
+                var json = await httpHandler.HttpGetAsync($"Cabins/id?cabinName={assetName}&facilityId={facilityId}");
+                int cabinId = JsonSerializer.Deserialize<int>(json, options);
+                allocationDto.AssetName = assetName;
+                var cabinJson = JsonSerializer.Serialize<AllocationDto>(allocationDto);
+                await httpHandler.HttpPostAsync(cabinJson, $"Seats/{cabinId}/allocations");
             }
             else if(choice.ToLower()=="seat")
             {
@@ -57,21 +70,22 @@ namespace SeatManagement.Implementations
                     return;
                 Console.Write("\n Enter the seat name to be allocated : ");
                 assetName = Console.ReadLine();
+
+                var json = await httpHandler.HttpGetAsync($"Seats/id?seatName={assetName}&facilityId={facilityId}");
+                int seatId = JsonSerializer.Deserialize<int>(json, options);
+                allocationDto.AssetName = assetName;
+                var seatJson = JsonSerializer.Serialize<AllocationDto>(allocationDto);
+                await httpHandler.HttpPostAsync(seatJson, $"Seats/{seatId}/allocations");
+
             }
             else
             {
                 Console.WriteLine("\n wrong choice");
                 return;
             }
-            AllocationDto allocationDto = new AllocationDto
-            {
-                AssetName=assetName,
-                AssetType=choice,
-                EmployeeId=empId,
-                FacilityId=facilityId,
-            };
-            var allocationJson=JsonSerializer.Serialize<AllocationDto>(allocationDto);
-            await httpHandler.HttpPostAsync(allocationJson, "AssetAllocations");
+            
+            //var allocationJson=JsonSerializer.Serialize<AllocationDto>(allocationDto);
+            //await httpHandler.HttpPostAsync(allocationJson, "AssetAllocations");
         }
         
         

@@ -1,4 +1,5 @@
 ﻿using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Repositories.Implementations;
 using WebApplication1.Repositories.Interfaces;
@@ -23,8 +24,8 @@ namespace WebApplication1.Services.Implementations
             string message;
             if (!facilityService.CheckIfExists(roomDto.FacilityId))
             {
-                message = "Facility Not Found";
-                return message;
+                throw new CustomException("Facility Not Found");
+               
             }
             else
             {
@@ -38,7 +39,7 @@ namespace WebApplication1.Services.Implementations
                 if (roomId != -1)
                     return roomId.ToString();
                 else
-                    return "room Not Found";
+                    throw new CustomException("room Not Found");
             }
         }
         public int GetRoomId(string name,int facilityId)
@@ -61,6 +62,13 @@ namespace WebApplication1.Services.Implementations
                 number++;
                 return "M" + number.ToString("D3");
             }
+        }
+        public bool CheckIfExists(int roomId)
+        {
+            var room = repository.GetById(roomId);
+            if(room == null)
+                return false;
+            return true;
         }
     }
 }

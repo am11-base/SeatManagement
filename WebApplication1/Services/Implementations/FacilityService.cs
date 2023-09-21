@@ -1,5 +1,6 @@
 ﻿using WebApplication1.Data;
 using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Repositories.Interfaces;
 using WebApplication1.Services.Implementations;
@@ -25,14 +26,13 @@ namespace WebApplication1.Services.Interfaces
             var cityId = cityService.GetCityId(facilityDto.CityName);
             if(cityId==null)
             {
-                message = "City don't exist";
-                return message;
+                throw new CustomException("City don't exist");
+                
             }
             var buildingId=builidingService.GetBuildingId(facilityDto.BuildingName);
             if (buildingId == null)
             {
-                message = "Building don't exist";
-                return message;
+                throw new CustomException("Building don't exist");
             }
 
             Facility facility = new Facility { FacilityBuildingId = (int)buildingId, FacilityCityId = (int)cityId, FacilityName = facilityDto.FacilityName, Floor = facilityDto.Floor };

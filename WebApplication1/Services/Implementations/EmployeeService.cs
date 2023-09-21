@@ -15,19 +15,18 @@ namespace WebApplication1.Services.Implementations
             this.repository = repository;
             this.departmentService = departmentService;
         }
-        public string AddEmployee(EmployeeDto employeeData)
+        public string AddEmployee(List<EmployeeDto> employeeDatas)
         {
-            if (departmentService.CheckIfExists(employeeData.DepartmentId))
+            foreach (var employeeData in employeeDatas)
             {
-                Employee employee = new Employee { DepartmentId=employeeData.DepartmentId,EmployeeName=employeeData.EmployeeName};
-                repository.Add(employee);
-                return "Employee Added";
+                if (departmentService.CheckIfExists(employeeData.DepartmentId))
+                {
+                    Employee employee = new Employee { DepartmentId = employeeData.DepartmentId, EmployeeName = employeeData.EmployeeName };
+                    repository.Add(employee);
+                    
+                }
             }
-            else
-            {
-                return "Department Not Found";
-            }
-
+            return "Employees Added";
         }
         public IEnumerable<EmployeeDto> GetAll()
         {
