@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeatManagement", "SeatManagement\SeatManagement.csproj", "{3DE95AAA-821D-48BE-9929-FBBC8785173B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{8FA4E2FF-1682-48FF-BA6B-1C1A579A5EE1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DE95AAA-821D-48BE-9929-FBBC8785173B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE95AAA-821D-48BE-9929-FBBC8785173B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE95AAA-821D-48BE-9929-FBBC8785173B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE95AAA-821D-48BE-9929-FBBC8785173B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FA4E2FF-1682-48FF-BA6B-1C1A579A5EE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FA4E2FF-1682-48FF-BA6B-1C1A579A5EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FA4E2FF-1682-48FF-BA6B-1C1A579A5EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FA4E2FF-1682-48FF-BA6B-1C1A579A5EE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FDFCA97A-8060-4A27-A9CB-51A9B35EC6B6}
+	EndGlobalSection
+EndGlobal
