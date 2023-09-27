@@ -10,7 +10,7 @@ namespace WebApplication1.Services.Implementations
         private readonly IRepository<Employee> repository;
         private readonly IDepartmentService departmentService;
 
-        public EmployeeService(IRepository<Employee> repository,IDepartmentService departmentService)
+        public EmployeeService(IRepository<Employee> repository, IDepartmentService departmentService)
         {
             this.repository = repository;
             this.departmentService = departmentService;
@@ -23,30 +23,33 @@ namespace WebApplication1.Services.Implementations
                 {
                     Employee employee = new Employee { DepartmentId = employeeData.DepartmentId, EmployeeName = employeeData.EmployeeName };
                     repository.Add(employee);
-                    
+
                 }
             }
             return "Employees Added";
         }
-        public IEnumerable<EmployeeDto> GetAll()
+        public IEnumerable<EmployeeDto> GetAll(UserParam? param)
         {
-            IEnumerable<EmployeeDto> employeeDatas=new List<EmployeeDto>();
-            var employeeList=repository.GetAll();
+            IEnumerable<EmployeeDto> employeeDatas = new List<EmployeeDto>();
+            var employeeList = repository.GetAll();
+            if (param.PageNumber != 0 && param.PageSize != 0)
+                employeeList=employeeList.Skip((param.PageNumber - 1) * param.PageSize).Take(param.PageSize);
+
             foreach (Employee employee in employeeList)
             {
-                var deptName=departmentService.GetDepartmentName(employee.DepartmentId);
+                var deptName = departmentService.GetDepartmentName(employee.DepartmentId);
                 employeeDatas = employeeDatas.Append(new EmployeeDto { DepartmentName = deptName, EmployeeName = employee.EmployeeName, EmployeeId = employee.EmployeeId });
             }
             return employeeDatas;
         }
         public bool CheckIfExists(int id)
         {
-            var employee=repository.GetById(id);
-            if(employee == null)
+            var employee = repository.GetById(id);
+            if (employee == null)
                 return false;
             else
-             return true; 
+                return true;
         }
-        
+
     }
 }

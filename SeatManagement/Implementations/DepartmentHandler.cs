@@ -15,7 +15,8 @@ namespace SeatManagement.Implementations
         public async Task PrintDepartmentAsync()
         {
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var departmentJson = await httpHandler.HttpGetAsync("Departments");
+            var departmentJson = await httpHandler.HttpGetAsync("departments");
+            if (departmentJson == null) return;
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var departments = JsonSerializer.Deserialize<DepartmentLookup[]>(departmentJson, options);
 

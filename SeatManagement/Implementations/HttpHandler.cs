@@ -9,7 +9,7 @@ namespace SeatManagement.Implementations
 {
     public class HttpHandler
     {
-        public async Task<string> HttpGetAsync(string url)
+        public async Task<string?> HttpGetAsync(string url)
         {
             try
             {
@@ -17,13 +17,15 @@ namespace SeatManagement.Implementations
                 using (var client = new HttpClient())
                 {
                     var response = await client.GetAsync(requestUrl);
+                    var responseJson = await response.Content.ReadAsStringAsync();
                     if (response.IsSuccessStatusCode)
                     {
-                        var json = await response.Content.ReadAsStringAsync();
-                        return json;
+                       
+                        return responseJson;
                     }
                     else
                     {
+                        Console.WriteLine($"\n Error:{response.StatusCode},{responseJson}");
                         return null;
                     }
 
@@ -31,7 +33,7 @@ namespace SeatManagement.Implementations
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine($"Error: { ex.ToString()}");
                 return null;
             }
         }

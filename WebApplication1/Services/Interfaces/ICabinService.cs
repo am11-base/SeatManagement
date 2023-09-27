@@ -6,9 +6,10 @@ namespace WebApplication1.Services.Interfaces
     public interface ICabinService
     {
         string AddCabins(CabinDto cabin);
-        FacilityAssetsDto<Cabin> GetFreeCabins(string facility);
+        FacilityAssetsDto<Cabin> GetFreeCabins(string facility,bool? isFree);
         int GetCabinId(int facilityId, string name);
         bool CheckIfAllocated(int cabinId);
         void AllocateCabin(int cabinId);
+        bool CheckIfExists(int cabinId);
     }
 }

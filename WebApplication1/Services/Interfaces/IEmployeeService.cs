@@ -5,7 +5,7 @@ namespace WebApplication1.Services.Interfaces
 {
     public interface IEmployeeService
     {
-        IEnumerable<EmployeeDto> GetAll();
+        IEnumerable<EmployeeDto> GetAll(UserParam? param);
         string AddEmployee(List<EmployeeDto> employeeDatas);
         bool CheckIfExists(int id);
     }

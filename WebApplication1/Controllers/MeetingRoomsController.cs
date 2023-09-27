@@ -6,7 +6,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/meetingrooms")]
     [ApiController]
     public class MeetingRoomsController : ControllerBase
     {
@@ -21,29 +21,18 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] RoomDto roomDto)
         {
-            try
-            {
-                string response = roomService.AddRoom(roomDto);
-                return Ok(int.Parse(response));
-            }
-            catch(CustomException ex)
-            {
-                return NotFound(ex.Message);
-            }
-                
+
+            string response = roomService.AddRoom(roomDto);
+            return Ok(int.Parse(response));
+
         }
         [HttpPost("{id}/amenities")]
-        public IActionResult AmenityMapping(int id, [FromBody]int amenityId)
+        public IActionResult AmenityMapping(int id, [FromBody] int amenityId)
         {
-            try
-            {
-                mappingService.AddMapping(id, amenityId);
-                return Ok("mapping added");
-            }
-            catch(CustomException ex)
-            {
-                return NotFound(ex.Message);
-            }
+
+            mappingService.AddMapping(id, amenityId);
+            return Ok("mapping added");
+
         }
 
     }

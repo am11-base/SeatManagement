@@ -6,7 +6,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/employees")]
     [ApiController]
     public class EmployeesController : ControllerBase
     {
@@ -17,24 +17,18 @@ namespace WebApplication1.Controllers
             this.service = service;
         }
 
-       
 
         [HttpPost]
         public IActionResult Add([FromBody]List<EmployeeDto> employees)
         {
             string msg=service.AddEmployee(employees);
-            //change
-            //TODO:
-            if (msg.Equals("Department Not Found"))
-                return NotFound(msg);
-            else
-                return Ok(msg);
+            return Ok(msg);
 
         }
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] UserParam? userParam)
         {
-            return Ok(service.GetAll());
+            return Ok(service.GetAll(userParam));
         }
     }
 }

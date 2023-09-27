@@ -2,6 +2,6 @@
 {
     public interface IAssetLookupService
     {
-        int GetAssetId(string assetName);
+        int? GetAssetId(string assetName);
     }
 }

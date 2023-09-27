@@ -23,11 +23,11 @@ namespace WebApplication1.Services.Implementations
             //check if roomid exist
             if(!roomService.CheckIfExists( roomId ))
             {
-                throw new CustomException("Room don't exist");
+                throw new NotFoundException("Room don't exist");
             }
             if(!amenityService.CheckIfExists(amenityId))
             {
-                throw new CustomException("Amenity don't exist");
+                throw new NotFoundException("Amenity don't exist");
             }
 
             //check if amenity id exist

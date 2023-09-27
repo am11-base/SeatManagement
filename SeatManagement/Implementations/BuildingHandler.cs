@@ -19,7 +19,8 @@ namespace SeatManagement.Implementations
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~");
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var json = await httpHandler.HttpGetAsync("BuildingLookUps");
+            var json = await httpHandler.HttpGetAsync("buildings");
+            if (json == null) return;
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var buildings = JsonSerializer.Deserialize<BuildingDto[]>(json, options);
             foreach (var building in buildings)
@@ -37,11 +38,11 @@ namespace SeatManagement.Implementations
             Console.Write(" Enter building Abbreviation : ");
             buildingAbbreviation = Console.ReadLine();
 
-            BuildingDto building = new BuildingDto { BuildingAbbreviation = buildingAbbreviation, BuildingName = buildingName };
+            BuildingDto building = new BuildingDto { BuildingAbbreviation = buildingAbbreviation!, BuildingName = buildingName! };
             var json = JsonSerializer.Serialize<BuildingDto>(building);
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(json, "BuildingLookUps");
+            await httpHandler.HttpPostAsync(json, "buildings");
 
             return buildingName;
         }

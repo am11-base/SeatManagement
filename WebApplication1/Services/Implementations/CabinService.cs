@@ -20,10 +20,9 @@ namespace WebApplication1.Services.Implementations
         }
         public string AddCabins(CabinDto cabinData)
         {
-            string message;
             if (!facilityService.CheckIfExists(cabinData.FacilityId))
             {
-                throw new CustomException("facility not found");
+                throw new NotFoundException("facility not found");
             }
             else
             {
@@ -39,14 +38,16 @@ namespace WebApplication1.Services.Implementations
             }
         }
 
-        public FacilityAssetsDto<Cabin> GetFreeCabins(string facility)
+        public FacilityAssetsDto<Cabin> GetFreeCabins(string? facility,bool? isFree)
         {
+            if (string.IsNullOrEmpty(facility) || isFree == false)
+                throw new BadRequestException("wrong filter");
+            
             int facilityId = int.Parse(facility);
             FacilityAssetsDto<Cabin> facilityAssetsDto = new FacilityAssetsDto<Cabin>();
             if (!facilityService.CheckIfExists(facilityId))
             {
-                facilityAssetsDto.FacilityId = -1;
-
+                throw new BadRequestException("facility not exist");
             }
             else
             {
@@ -61,7 +62,7 @@ namespace WebApplication1.Services.Implementations
 
         private string GetCabinNumber(int facilityId)
         {
-            string lastCabin = cabinRepo.getLastAllocatedCabin(facilityId);
+            string? lastCabin = cabinRepo.getLastAllocatedCabin(facilityId);
             if (lastCabin == null)
             {
                 return "C001";
@@ -76,15 +77,25 @@ namespace WebApplication1.Services.Implementations
         }
         public int GetCabinId(int facilityId,string name)
         {
-            return cabinRepo.GetCabinId(facilityId,name);
+            int cabinId = cabinRepo.GetCabinId(facilityId, name);
+            if (cabinId == -1)
+                throw new NotFoundException("cabin not exist");
+            return cabinId;
         }
         public bool CheckIfAllocated(int cabinId)
         {
-            return repository.GetById(cabinId).IsAssigned;
+            return repository.GetById(cabinId)!.IsAssigned;
+        }
+        public bool CheckIfExists(int cabinId)
+        {
+            var cabin = repository.GetById(cabinId);
+            if (cabin == null)
+                return false;
+            return true;
         }
         public void AllocateCabin(int cabinId)
         {
-            var cabin = repository.GetById(cabinId);
+            var cabin = repository.GetById(cabinId)!;
             cabin.IsAssigned = true;
             repository.Update(cabin);
         }

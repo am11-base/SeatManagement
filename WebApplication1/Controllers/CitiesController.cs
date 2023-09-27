@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Services.Implementations;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cities")]
     [ApiController]
-    public class CityLookUpsController : ControllerBase
+    public class CitiesController : ControllerBase
     {
      
         private readonly ICityService service;
 
-        public CityLookUpsController(ICityService service)
+        public CitiesController(ICityService service)
         {
             this.service = service;
         }
@@ -26,15 +27,8 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Add([FromBody]CityDto cityDto)
         {
-            try
-            {
-                service.AddCity(cityDto);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+             service.AddCity(cityDto);
+             return Ok("city added");  
         }
     }
 }

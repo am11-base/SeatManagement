@@ -12,9 +12,13 @@ namespace WebApplication1.Services.Implementations
         {
             this.repository = repository;
         }
-        public int GetAssetId(string assetName)
+        public int? GetAssetId(string assetName)
         {
-            return repository.GetAll().Where(asset => asset.AssetType.ToLower() == assetName.ToLower()).FirstOrDefault().AssetTypeId;
+            var asset = repository.GetAll().Where(asset => asset.AssetType.ToLower() == assetName.ToLower()).FirstOrDefault();
+            if(asset == null) 
+                return null;
+            else
+                return asset.AssetTypeId;
         }
     }
 }

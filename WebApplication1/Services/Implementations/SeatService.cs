@@ -21,10 +21,9 @@ namespace WebApplication1.Services.Implementations
         }
         public string AddSeats(SeatDto seatData)
         {
-            string message;
             if (!facilityService.CheckIfExists(seatData.FacilityId))
             {
-                throw new CustomException("Facility Not Found");
+                throw new NotFoundException("Facility Not Found");
             }
             else
             {
@@ -40,7 +39,7 @@ namespace WebApplication1.Services.Implementations
         }
         private string GetSeatNumber(int facilityId)
         {
-            string lastSeat = seatRepo.getLastAllocatedSeat(facilityId);
+            string? lastSeat = seatRepo.getLastAllocatedSeat(facilityId);
             if (lastSeat == null)
             {
                 return "S001";
@@ -54,14 +53,16 @@ namespace WebApplication1.Services.Implementations
             }
         }
 
-        public FacilityAssetsDto<Seat> GetFreeSeats(string facility)
+        public FacilityAssetsDto<Seat> GetFreeSeats(string? facility,bool? isFree)
         {
+            if (string.IsNullOrEmpty(facility) || isFree == false)
+                throw new BadRequestException("wrong filter");
+           
             int facilityId = int.Parse(facility);
-            //var facilityIdArray = facility.Split(',').Select(int.Parse).ToList();
             FacilityAssetsDto<Seat> facilityAssetsDto = new FacilityAssetsDto<Seat>();
             if (!facilityService.CheckIfExists(facilityId))
             {
-                facilityAssetsDto.FacilityId = -1;
+                throw new BadRequestException("facility not exist");
 
             }
             else
@@ -75,15 +76,27 @@ namespace WebApplication1.Services.Implementations
         }
         public int GetSeatId(int facilityId, string name)
         {
-            return seatRepo.GetSeatId(facilityId, name);
+           var seatId= seatRepo.GetSeatId(facilityId, name);
+            if (seatId == null)
+                throw new BadRequestException("seat not found");
+            else
+                return (int)seatId;
+            
+        }
+        public bool CheckIfExists(int seatId)
+        {
+            var seat = repository.GetById(seatId);
+            if(seat== null)
+                return false;
+            return true;
         }
         public bool CheckIfAllocated(int seatId)
         {
-            return repository.GetById(seatId).IsAssigned;
+            return repository.GetById(seatId)!.IsAssigned;
         }
         public void AllocateSeat(int seatId)
         {
-            var seat = repository.GetById(seatId);
+            var seat = repository.GetById(seatId)!;
             seat.IsAssigned = true;
             repository.Update(seat);
         }

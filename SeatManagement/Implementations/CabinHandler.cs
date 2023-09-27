@@ -30,14 +30,15 @@ namespace SeatManagement.Implementations
             CabinDto cabin=new CabinDto { countOfCabins = cabinCount, FacilityId = facilityId };
             var json = JsonSerializer.Serialize<CabinDto>(cabin);
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(json, "Cabins");
+            await httpHandler.HttpPostAsync(json, "cabins");
         }
         public async Task<int> PrintFreeCabinsAsync(int facilityId)
         {
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var cabinJson = await httpHandler.HttpGetAsync($"Cabins?facilityId={facilityId.ToString()}&isFree=true");
+            var cabinJson = await httpHandler.HttpGetAsync($"cabins?facilityId={facilityId.ToString()}&isFree=true");
+            if (cabinJson == null) return -1;
             var freeCabins = JsonSerializer.Deserialize<FacilityAssetsDto<Cabin>>(cabinJson, options);
             if (freeCabins.FacilityId == -1)
             {

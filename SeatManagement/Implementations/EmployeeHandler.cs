@@ -41,7 +41,7 @@ namespace SeatManagement.Implementations
             }
             var json = JsonSerializer.Serialize<List<EmployeeDto>>(listOfEmployees);
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(json, "Employees");
+            await httpHandler.HttpPostAsync(json, "employees");
 
         }
         public async Task DisplayAllAsync()
@@ -49,7 +49,8 @@ namespace SeatManagement.Implementations
             Console.WriteLine("Employee List");
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var employeeJson = await httpHandler.HttpGetAsync("Employees");
+            var employeeJson = await httpHandler.HttpGetAsync("employees");
+            if (employeeJson == null) return;
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var employees = JsonSerializer.Deserialize<EmployeeDto[]>(employeeJson, options);
 

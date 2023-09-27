@@ -8,14 +8,14 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/seats")]
     [ApiController]
     public class SeatsController : ControllerBase
     {
         private readonly ISeatService seatService;
         private readonly IAllocationService allocationService;
 
-        public SeatsController(ISeatService seatService,IAllocationService allocationService)
+        public SeatsController(ISeatService seatService, IAllocationService allocationService)
         {
             this.seatService = seatService;
             this.allocationService = allocationService;
@@ -23,49 +23,33 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] SeatDto seatDto)
         {
-            try
-            {
-                string message = seatService.AddSeats(seatDto);
-                return Ok(message);
-            }
-            catch(CustomException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            string message = seatService.AddSeats(seatDto);
+            return Ok(message);
+
         }
         [HttpGet]
-        //change to single get add isfreeseats
-        public IActionResult Get([FromQuery] string? facilityId,bool? isFree)
+        public IActionResult Get([FromQuery] string? facilityId, bool? isFree)
         {
-            if(!string.IsNullOrEmpty(facilityId)&&isFree==true)
-             return Ok(seatService.GetFreeSeats(facilityId));
-            else
-                return BadRequest();
+
+            return Ok(seatService.GetFreeSeats(facilityId, isFree));
         }
         [HttpGet("id")]
-        public IActionResult GetSeatIdName([FromQuery] string seatName,int facilityId)
+        public IActionResult GetSeatIdName([FromQuery] string seatName, int facilityId)
         {
-            var seatId = seatService.GetSeatId(facilityId, seatName);
 
-            if (seatId != null)
-            {
-                return Ok(seatId);
-            }
-            else
-            {
-                return NotFound("Seat not found"); // Return a 404 Not Found response if the seat is not found by name
-            }
+            int seatId = seatService.GetSeatId(facilityId, seatName);
+            return Ok(seatId);
+
         }
         [HttpPost("{id}/allocations")]
         public IActionResult Allocate(int id, [FromBody] AllocationDto allocationDto)
         {
-            string message = allocationService.AddAllocation(allocationDto);
-            if (message == "allocated")
-                return Ok(message);
-            else
-                return BadRequest(message);
+
+            string message = allocationService.AddAllocation(id, allocationDto);
+            return Ok(message);
+
         }
     }
-    
+
 
 }

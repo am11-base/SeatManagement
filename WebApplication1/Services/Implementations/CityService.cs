@@ -27,7 +27,7 @@ namespace WebApplication1.Services.Interfaces
 
         public string GetCityName(int id)
         {
-            return repository.GetById(id).CityName;
+            return repository.GetById(id)!.CityName;
         }
         public IEnumerable<CityDto> GetAllCities()
         {
@@ -44,7 +44,7 @@ namespace WebApplication1.Services.Interfaces
 
         public string GetCityAbbreviation(int facilityCityId)
         {
-            return repository.GetById(facilityCityId).CityAbbreviation;
+            return repository.GetById(facilityCityId)!.CityAbbreviation;
         }
     }
 }

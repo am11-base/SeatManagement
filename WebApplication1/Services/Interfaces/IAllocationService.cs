@@ -4,6 +4,6 @@ namespace WebApplication1.Services.Interfaces
 {
     public interface IAllocationService
     {
-        string AddAllocation(AllocationDto allocationDto);
+        string AddAllocation(int id, AllocationDto allocationDto);
     }
 }

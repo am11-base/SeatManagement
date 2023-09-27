@@ -36,7 +36,8 @@ namespace SeatManagement.Implementations
         {
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var seatJson = await httpHandler.HttpGetAsync($"Seats?facilityId={facilityId.ToString()}&isFree=true");
+            var seatJson = await httpHandler.HttpGetAsync($"seats?facilityId={facilityId.ToString()}&isFree=true");
+            if (seatJson == null) return -1;
             var freeSeats = JsonSerializer.Deserialize<FacilityAssetsDto<Seat>>(seatJson, options);
             if (freeSeats.FacilityId == -1)
             {

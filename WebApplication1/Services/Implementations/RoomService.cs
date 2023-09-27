@@ -21,10 +21,9 @@ namespace WebApplication1.Services.Implementations
         }
         public string AddRoom(RoomDto roomDto)
         {
-            string message;
             if (!facilityService.CheckIfExists(roomDto.FacilityId))
             {
-                throw new CustomException("Facility Not Found");
+                throw new NotFoundException("Facility Not Found");
                
             }
             else
@@ -39,7 +38,7 @@ namespace WebApplication1.Services.Implementations
                 if (roomId != -1)
                     return roomId.ToString();
                 else
-                    throw new CustomException("room Not Found");
+                    throw new NotFoundException("room Not Found");
             }
         }
         public int GetRoomId(string name,int facilityId)
@@ -50,7 +49,7 @@ namespace WebApplication1.Services.Implementations
 
         private string GetRoomNumber(int facilityId)
         {
-            string lastRoom = roomRepo.getLastAllocatedRoom(facilityId);
+            string? lastRoom = roomRepo.getLastAllocatedRoom(facilityId);
             if (lastRoom == null)
             {
                 return "M001";

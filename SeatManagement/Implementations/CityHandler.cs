@@ -19,7 +19,8 @@ namespace SeatManagement.Implementations
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~");
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var json = await httpHandler.HttpGetAsync("CityLookups");
+            var json = await httpHandler.HttpGetAsync("cities");
+            if (json == null) return;
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var cities = JsonSerializer.Deserialize<CityDto[]>(json, options);
             foreach (var city in cities)
@@ -42,7 +43,7 @@ namespace SeatManagement.Implementations
             var json = JsonSerializer.Serialize<CityDto>(city);
 
             HttpHandler httpHandler=HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(json, "CityLookUps");
+            await httpHandler.HttpPostAsync(json, "cities");
 
             return cityName;
         }

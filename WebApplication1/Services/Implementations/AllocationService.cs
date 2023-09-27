@@ -1,4 +1,5 @@
 ﻿using WebApplication1.DTOs;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Repositories.Interfaces;
 using WebApplication1.Services.Interfaces;
@@ -23,78 +24,69 @@ namespace WebApplication1.Services.Implementations
             this.seatService = seatService;
             this.assetLookupService = assetLookupService;
         }
-        public string AddAllocation(AllocationDto allocationDto)
+        public string AddAllocation(int assetId, AllocationDto allocationDto)
         {
-            string message;
-            int assetId;
-
-            int assetTypeId = assetLookupService.GetAssetId(allocationDto.AssetType);
             AssetAllocation allocation = new AssetAllocation();
-            //
+
+            int? assetTypeId = assetLookupService.GetAssetId(allocationDto.AssetType);
+            if (assetTypeId == null)
+                throw new NotFoundException("AssetType don't exist");
+
+
             if (!employeeService.CheckIfExists(allocationDto.EmployeeId))
             {
-                message = "Employee don't exist";
-                return message;
+                throw new NotFoundException("Employee don't exist");
             }
             else
             {
                 if (CheckIfEmployeeAllocated(allocationDto.EmployeeId))
                 {
-                    message = "Employee Already Allocated";
-                    return message;
+                    throw new BadRequestException("Employee Already Allocated");
                 }
                 if (allocationDto.AssetType == "cabin")
                 {
-                    //check if cabin name exist and also cabin is not allocated
-                    assetId = cabinService.GetCabinId(allocationDto.FacilityId, allocationDto.AssetName);
-                    if (assetId == -1)
+                    //add logic to check if id exist
+                    bool isCabinExist = cabinService.CheckIfExists(assetId);
+                    if (!isCabinExist)
+                        throw new NotFoundException("cabin not exist");
+                    //check if cabin is already allocated
+                    bool isCabinAllocated = cabinService.CheckIfAllocated(assetId);
+                    if (isCabinAllocated)
                     {
-                        message = "Asset Not Exist";
-                        return message;
+                        throw new BadRequestException("Asset Already Allocated");
                     }
                     else
                     {
-                        bool status = cabinService.CheckIfAllocated(assetId);
-                        if (status)
-                        {
-                            message = "Asset Already Allocated";
-                            return message;
-                        }
-                        else
-                        {
-                            allocation.AssetId = assetId;
-                            allocation.AssetTypeId = assetTypeId;
-                            allocation.EmployeeId = allocationDto.EmployeeId;
+                        allocation.AssetId = assetId;
+                        allocation.AssetTypeId = (int)assetTypeId;
+                        allocation.EmployeeId = allocationDto.EmployeeId;
 
-                            cabinService.AllocateCabin(assetId);
-                        }
+                        cabinService.AllocateCabin(assetId);
                     }
+
                 }
                 else
                 {
-                    //check if seat name exist and also cabin is not allocated
-                    assetId = seatService.GetSeatId(allocationDto.FacilityId, allocationDto.AssetName);
-                    if (assetId == -1)
+                    //check if seat id exist
+                    bool isSeatExist = seatService.CheckIfExists(assetId);
+                    if (!isSeatExist)
+                        throw new NotFoundException("seat not exist");
+
+                    //check if seat is allocated
+
+                    bool isSeatAllocated = seatService.CheckIfAllocated(assetId);
+                    if (isSeatAllocated)
                     {
-                        message = "Asset Not Exist";
-                        return message;
+                        throw new BadRequestException("Asset Already Allocated");
                     }
                     else
                     {
-                        bool status = seatService.CheckIfAllocated(assetId);
-                        if (status)
-                        {
-                            message = "Asset Already Allocated";
-                            return message;
-                        }
-                        else
-                        {
-                            allocation.AssetId = assetId;
-                            allocation.AssetTypeId = assetTypeId;
-                            allocation.EmployeeId = allocationDto.EmployeeId;
-                            seatService.AllocateSeat(assetId);
-                        }
+                        allocation.AssetId = assetId;
+                        allocation.AssetTypeId = (int)assetTypeId;
+                        allocation.EmployeeId = allocationDto.EmployeeId;
+                        seatService.AllocateSeat(assetId);
                     }
+
                 }
             }
 

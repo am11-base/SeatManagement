@@ -44,7 +44,6 @@ namespace SeatManagement.Implementations
           
                 AssetType = choice,
                 EmployeeId = empId,
-                FacilityId = facilityId,
             };
            
             if (choice.ToLower() == "cabin")
@@ -56,11 +55,12 @@ namespace SeatManagement.Implementations
                 Console.Write("\n Enter the cabin name to be allocated : ");
                 assetName=Console.ReadLine();
                 
-                var json = await httpHandler.HttpGetAsync($"Cabins/id?cabinName={assetName}&facilityId={facilityId}");
+                var json = await httpHandler.HttpGetAsync($"cabins/id?cabinName={assetName}&facilityId={facilityId}");
+                if (json == null)
+                    return;
                 int cabinId = JsonSerializer.Deserialize<int>(json, options);
-                allocationDto.AssetName = assetName;
                 var cabinJson = JsonSerializer.Serialize<AllocationDto>(allocationDto);
-                await httpHandler.HttpPostAsync(cabinJson, $"Seats/{cabinId}/allocations");
+                await httpHandler.HttpPostAsync(cabinJson, $"cabins/{cabinId}/allocations");
             }
             else if(choice.ToLower()=="seat")
             {
@@ -71,11 +71,13 @@ namespace SeatManagement.Implementations
                 Console.Write("\n Enter the seat name to be allocated : ");
                 assetName = Console.ReadLine();
 
-                var json = await httpHandler.HttpGetAsync($"Seats/id?seatName={assetName}&facilityId={facilityId}");
+                var json = await httpHandler.HttpGetAsync($"seats/id?seatName={assetName}&facilityId={facilityId}");
+
+                if (json == null)
+                    return;
                 int seatId = JsonSerializer.Deserialize<int>(json, options);
-                allocationDto.AssetName = assetName;
                 var seatJson = JsonSerializer.Serialize<AllocationDto>(allocationDto);
-                await httpHandler.HttpPostAsync(seatJson, $"Seats/{seatId}/allocations");
+                await httpHandler.HttpPostAsync(seatJson, $"seats/{seatId}/allocations");
 
             }
             else

@@ -2,6 +2,7 @@
 using WebApplication1.DTOs;
 using WebApplication1.Exceptions;
 using WebApplication1.Models;
+using WebApplication1.Repositories.Implementations;
 using WebApplication1.Repositories.Interfaces;
 using WebApplication1.Services.Implementations;
 
@@ -22,60 +23,29 @@ namespace WebApplication1.Services.Interfaces
         }
         public string OnBoardFacility(FacilityDto facilityDto)
         {
-            string message;
             var cityId = cityService.GetCityId(facilityDto.CityName);
             if(cityId==null)
             {
-                throw new CustomException("City don't exist");
+                throw new NotFoundException("City don't exist");
                 
             }
             var buildingId=builidingService.GetBuildingId(facilityDto.BuildingName);
             if (buildingId == null)
             {
-                throw new CustomException("Building don't exist");
+                throw new NotFoundException("Building don't exist");
             }
 
             Facility facility = new Facility { FacilityBuildingId = (int)buildingId, FacilityCityId = (int)cityId, FacilityName = facilityDto.FacilityName, Floor = facilityDto.Floor };
             repository.Add(facility);
+            
+            CacheModel<Facility>.Delete("FacilityList");
             return ("Facility Onboarded");
             
-        }
-        public IEnumerable<FacilityDto> GetAllFacilities()
-        {
-            IEnumerable<FacilityDto> facilityDtos = new List<FacilityDto>();
-            var facilities = repository.GetAll();
-            foreach(Facility facility in facilities)
-            {
-                var cityName = cityService.GetCityName(facility.FacilityCityId);
-                var buildingName = builidingService.GetBuildingName(facility.FacilityBuildingId);
-                facilityDtos=facilityDtos.Append(new FacilityDto { BuildingName = buildingName,CityName = cityName,FacilityName=facility.FacilityName,Floor=facility.Floor,FacilityId=facility.FacilityId });
-                
-            }
-            return facilityDtos;
-        
-        }
-        public IEnumerable<FacilityDto>? GetAllFacilitiesByCity(string city)
-        {
-            IEnumerable<FacilityDto> facilityDtos = new List<FacilityDto>();
-            var cityId = cityService.GetCityId(city);
-            if (cityId == null)
-                return null;
-            
-            var facilities = repository.GetAll().Where(facility=>facility.FacilityCityId==cityId);
-            foreach (Facility facility in facilities)
-            {
-                var cityName = cityService.GetCityName(facility.FacilityCityId);
-                var buildingName = builidingService.GetBuildingName(facility.FacilityBuildingId);
-                facilityDtos = facilityDtos.Append(new FacilityDto { BuildingName = buildingName, CityName = cityName, FacilityName = facility.FacilityName, Floor = facility.Floor, FacilityId = facility.FacilityId });
-
-            }
-            return facilityDtos;
-
         }
         public string GetFacilityAbbreviation(int id)
         {
             string abbreviation;
-            var facility = repository.GetById(id);
+            var facility = repository.GetById(id)!;
             var cityAbbreviation = cityService.GetCityAbbreviation(facility.FacilityCityId);
             var buildingAbbreviation = builidingService.GetBuildingAbbreviation(facility.FacilityBuildingId);
             abbreviation = $"{cityAbbreviation}-{buildingAbbreviation}-{facility.Floor}-{facility.FacilityName}";
@@ -85,17 +55,52 @@ namespace WebApplication1.Services.Interfaces
         {
             if (repository.GetById(id) == null)
                 return false;
-            else 
+            else
                 return true;
         }
-
-        public IEnumerable<FacilityDto>? GetAllFacilitiesByFloor(int? floor)
+        public IEnumerable<FacilityDto> GetFacilities(string? city,int? floor)
         {
-            IEnumerable<FacilityDto> facilityDtos = new List<FacilityDto>();
+            IEnumerable<FacilityDto> facilityDtos;
+            IEnumerable<Facility> facilities;
+            if (!string.IsNullOrEmpty(city) && floor.HasValue)
+                throw new BadRequestException("filter error.Can't provide both filter");
 
-            var facilities = repository.GetAll().Where(facility => facility.Floor==floor);
-            if (facilities.Count() == 0)
-                return null;
+            else if (!string.IsNullOrEmpty(city))
+            {
+                facilityDtos = new List<FacilityDto>();
+                var cityId = cityService.GetCityId(city);
+                if (cityId == null)
+                    throw new NotFoundException("city not exist");
+
+                facilities = repository.GetAll().Where(facility => facility.FacilityCityId == cityId);
+                
+            }
+            else if (floor.HasValue)
+            {
+
+                facilityDtos = new List<FacilityDto>();
+                facilities = repository.GetAll().Where(facility => facility.Floor == floor);
+                if (facilities.Count() == 0)
+                    throw new NotFoundException("floor not exist");    
+
+            }
+            else
+            {
+                facilityDtos = new List<FacilityDto>();
+                var listOfFacilities = CacheModel<Facility>.Get("FacilityList");
+                if(listOfFacilities!=null)
+                {
+                    facilities = listOfFacilities;
+                   
+                }
+                else
+                {
+                    facilities = repository.GetAll();
+                    CacheModel<Facility>.Set("FacilityList",facilities);
+                }
+               
+     
+            }
             foreach (Facility facility in facilities)
             {
                 var cityName = cityService.GetCityName(facility.FacilityCityId);
@@ -105,5 +110,6 @@ namespace WebApplication1.Services.Interfaces
             }
             return facilityDtos;
         }
+       
     }
 }

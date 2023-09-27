@@ -7,63 +7,45 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cabins")]
     [ApiController]
     public class CabinsController : ControllerBase
     {
         private readonly ICabinService cabinService;
         private readonly IAllocationService allocationService;
 
-        public CabinsController(ICabinService cabinService,IAllocationService allocationService)
+        public CabinsController(ICabinService cabinService, IAllocationService allocationService)
         {
             this.cabinService = cabinService;
             this.allocationService = allocationService;
         }
         [HttpPost]
-        public IActionResult Add([FromBody]CabinDto cabinDto)
+        public IActionResult Add([FromBody] CabinDto cabinDto)
         {
-            try
-            {
-                string message = cabinService.AddCabins(cabinDto);
-                return Ok(message);
-            }
-            catch(CustomException ex)
-            {
-                return NotFound(ex.Message);
-            }
-                
+            string message = cabinService.AddCabins(cabinDto);
+            return Ok(message);
+
         }
-        //change this to get add isfreecabins=1 modify!!!!
         [HttpGet]
         public IActionResult Get([FromQuery] string? facilityId, bool? isFree)
         {
-            if (!string.IsNullOrEmpty(facilityId) && isFree==true)
-                return Ok(cabinService.GetFreeCabins(facilityId));
-            else
-                return BadRequest();
+
+            return Ok(cabinService.GetFreeCabins(facilityId!, isFree));
+
         }
         [HttpGet("id")]
         public IActionResult GetCabinIdByName([FromQuery] string cabinName, int facilityId)
         {
-            var cabinId = cabinService.GetCabinId(facilityId, cabinName);
+            int? cabinId = cabinService.GetCabinId(facilityId, cabinName);
+            return Ok(cabinId);
 
-            if (cabinId != null)
-            {
-                return Ok(cabinId);
-            }
-            else
-            {
-                return NotFound("Cabin not found"); // Return a 404 Not Found response if the seat is not found by name
-            }
         }
         [HttpPost("{id}/allocations")]
         public IActionResult Allocate(int id, [FromBody] AllocationDto allocationDto)
         {
-            string message = allocationService.AddAllocation(allocationDto);
-            if (message == "allocated")
+                string message = allocationService.AddAllocation(id, allocationDto);
                 return Ok(message);
-            else
-                return BadRequest(message);
+           
         }
 
     }

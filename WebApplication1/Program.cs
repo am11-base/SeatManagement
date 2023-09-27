@@ -1,5 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WebApplication1.Data;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Repositories.Implementations;
 using WebApplication1.Repositories.Interfaces;
@@ -20,7 +25,7 @@ builder.Services.AddDbContext<SeatManagementDbContext>(options => options.UseSql
 builder.Services.AddScoped<IRepository<BuildingLookUp>, BuildingLookUpRepo>();
 builder.Services.AddScoped<IRepository<CityLookUp>, CityLookUpRepo>();
 builder.Services.AddScoped<IRepository<Facility>, FacilityRepo>();
-builder.Services.AddScoped<IRepository<Seat>,SeatRepo>();
+builder.Services.AddScoped<IRepository<Seat>, SeatRepo>();
 builder.Services.AddScoped<IRepository<Cabin>, CabinRepo>();
 builder.Services.AddScoped<IRepository<MeetingRoom>, MeetingRoomRepo>();
 builder.Services.AddScoped<IRepository<Amenity>, AmenityRepo>();
@@ -43,21 +48,38 @@ builder.Services.AddScoped<IAllocationRepo, AssetAllocationRepo>();
 
 
 
-builder.Services.AddScoped<IBuildingService,BuildingService>();
+builder.Services.AddScoped<IBuildingService, BuildingService>();
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IFacilityService, FacilityService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<ICabinService, CabinService>();
-builder.Services.AddScoped<IRoomService,RoomService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IAmenityService, AmenityService>();
 builder.Services.AddScoped<IRoomAmenityMapService, RoomAmenityMapService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IAllocationService, AllocationService>();
 builder.Services.AddScoped<IAssetLookupService, AssetLookupService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddAuthentication(authOptions =>
+{
+    authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+ .AddJwtBearer(options =>
+ {
+     var keyBytes = Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("Jwt:Key"));
 
-
-
+     options.SaveToken = true;
+     options.TokenValidationParameters = new TokenValidationParameters
+     {
+       IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+       ValidateLifetime = true,
+       ValidateAudience = false,
+       ValidateIssuer = false,
+       ClockSkew = TimeSpan.Zero
+     };
+  });
 
 var app = builder.Build();
 
@@ -69,9 +91,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.Run();

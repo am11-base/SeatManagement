@@ -57,7 +57,7 @@ namespace SeatManagement.Implementations
             var json=JsonSerializer.Serialize<FacilityDto>(facility);
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(json, "Facilities");
+            await httpHandler.HttpPostAsync(json, "facilities");
 
         }
         public async Task DisplayAllAsync()
@@ -66,7 +66,8 @@ namespace SeatManagement.Implementations
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var json = await httpHandler.HttpGetAsync("Facilities");
+            var json = await httpHandler.HttpGetAsync("facilities");
+            if (json == null) return;
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var facilities = JsonSerializer.Deserialize<FacilityDto[]>(json, options);
             Console.WriteLine("| Facility ID |   City Name   | Building Name |  Floor  | Facility Name |");

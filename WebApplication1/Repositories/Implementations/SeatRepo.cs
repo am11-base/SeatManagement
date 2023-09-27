@@ -24,11 +24,11 @@ namespace WebApplication1.Repositories.Implementations
         {
             return dbContext.Set<Seat>().Where(seat => seat.FacilityId == facility && seat.IsAssigned == false).ToList();
         }
-        public int GetSeatId(int facilityId, string name)
+        public int? GetSeatId(int facilityId, string name)
         {
             var seat = dbContext.Set<Seat>().Where(seat => seat.FacilityId == facilityId && seat.SeatName == name).FirstOrDefault();
             if (seat == null)
-                return -1;
+                return null;
             else
                 return seat.SeatId;
         }

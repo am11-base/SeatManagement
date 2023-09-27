@@ -6,6 +6,6 @@ namespace WebApplication1.Repositories.Interfaces
     {
         IEnumerable<Seat> GetFreeSeats(int facility);
         string? getLastAllocatedSeat(int facility);
-        int GetSeatId(int facilityId, string name);
+        int? GetSeatId(int facilityId, string name);
     }
 }

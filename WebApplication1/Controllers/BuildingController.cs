@@ -1,22 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTOs;
 using WebApplication1.Services.Implementations;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/buildings")]
     [ApiController]
-    public class BuildingLookUpsController : ControllerBase
+    public class BuildingController : ControllerBase
     {
         private readonly IBuildingService service;
 
-        public BuildingLookUpsController(IBuildingService service)
+        public BuildingController(IBuildingService service)
         {
             this.service = service;
         }
 
         [HttpGet]
+        //[Authorize(Roles ="admin")]
         public IActionResult Get()
         {
             var list = service.GetAllBuildings();
@@ -26,7 +28,7 @@ namespace WebApplication1.Controllers
         public IActionResult Add([FromBody]BuildingDto buildingDto)
         {
                 service.AddBuilding(buildingDto);
-                return Ok();
+                return Ok("building added");
  
         }
     }

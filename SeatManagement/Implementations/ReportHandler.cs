@@ -55,7 +55,7 @@ namespace SeatManagement.Implementations
             int floor =int.Parse(Console.ReadLine());
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var facilityJson = await httpHandler.HttpGetAsync($"Facilities?floor={floor}");
+            var facilityJson = await httpHandler.HttpGetAsync($"facilities?floor={floor}");
             if (facilityJson == null)
             {
                 Console.WriteLine("\n floor don't exist");
@@ -78,7 +78,8 @@ namespace SeatManagement.Implementations
             string cityName = Console.ReadLine();
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var facilityJson = await httpHandler.HttpGetAsync($"Facilities?city={cityName}");
+            var facilityJson = await httpHandler.HttpGetAsync($"facilities?city={cityName}");
+
             if (facilityJson == null)
             {
                 Console.WriteLine("\n City don't exist");
@@ -97,7 +98,8 @@ namespace SeatManagement.Implementations
         {
 
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var facilityJson = await httpHandler.HttpGetAsync("Facilities");
+            var facilityJson = await httpHandler.HttpGetAsync("facilities");
+            if (facilityJson == null) return;
             await GenerateReportAsync(facilityJson);
             
           
@@ -117,7 +119,8 @@ namespace SeatManagement.Implementations
                 List<FacilityAssetsDto<Seat>> allFreeSeatsData = new List<FacilityAssetsDto<Seat>>();
                 foreach (var facility in facilities)
                 {
-                    var seatJson = await httpHandler.HttpGetAsync($"Seats?facilityId={facility.FacilityId.ToString()}&isFree=true");
+                    var seatJson = await httpHandler.HttpGetAsync($"seats?facilityId={facility.FacilityId.ToString()}&isFree=true");
+                    if (seatJson == null) return;
                     var freeSeats = JsonSerializer.Deserialize<FacilityAssetsDto<Seat>>(seatJson, options);
                     allFreeSeatsData.Add(freeSeats);
                 }
@@ -136,7 +139,8 @@ namespace SeatManagement.Implementations
 
                 foreach (var facility in facilities)
                 {
-                    var cabinJson = await httpHandler.HttpGetAsync($"Cabins?facilityId={facility.FacilityId.ToString()}&isFree=true");
+                    var cabinJson = await httpHandler.HttpGetAsync($"cabins?facilityId={facility.FacilityId.ToString()}&isFree=true");
+                    if (cabinJson == null) return;
                     var freeCabins = JsonSerializer.Deserialize<FacilityAssetsDto<Cabin>>(cabinJson, options);
                     allFreeCabinsData.Add(freeCabins);
                 }

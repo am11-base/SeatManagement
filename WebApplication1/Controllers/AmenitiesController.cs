@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/amenities")]
     [ApiController]
+    //[Authorize]
     public class AmenitiesController : ControllerBase
     {
         private readonly IAmenityService amenityService;
@@ -17,6 +19,7 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+
             return Ok(amenityService.GetAllAmenities());
         }
     }

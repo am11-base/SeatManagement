@@ -30,13 +30,14 @@ namespace SeatManagement.Implementations
             RoomDto room= new RoomDto { FacilityId = facilityId,numberOfChairs=chairCount };
             var json = JsonSerializer.Serialize<RoomDto>(room);
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            var response=await httpHandler.HttpPostAsync(json, "MeetingRooms");
+            var response=await httpHandler.HttpPostAsync(json, "meetingrooms");
 
             if (response!=null)
             {
                 Console.WriteLine("\n Room Added");
                 int roomId = int.Parse(response);
-                var amenityJson = await httpHandler.HttpGetAsync("Amenities");
+                var amenityJson = await httpHandler.HttpGetAsync("amenities");
+                if (amenityJson == null) return;
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var amenities = JsonSerializer.Deserialize<Amenity[]>(amenityJson, options);
 
@@ -57,7 +58,7 @@ namespace SeatManagement.Implementations
             //RoomAmenityMapDto roomAmenityMap = new RoomAmenityMapDto { AmenityId = amenityId, RoomId = roomId };
             //var json = JsonSerializer.Serialize<RoomAmenityMapDto>(roomAmenityMap);
             HttpHandler httpHandler = HttpHandlerSingleton.GetInstance();
-            await httpHandler.HttpPostAsync(amenityId.ToString(), $"MeetingRooms/{roomId}/amenities");
+            await httpHandler.HttpPostAsync(amenityId.ToString(), $"meetingrooms/{roomId}/amenities");
         }
     }
 }
